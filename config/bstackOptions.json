@@ -1,6 +1,6 @@
 {
   "os": "Windows",
-  "os_version": "10",
+  "os_version": "11",
   "browser": "Chrome",
   "browser_version": "latest",
   "browserstack.local": "false"
