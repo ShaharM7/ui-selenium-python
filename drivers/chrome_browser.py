@@ -2,5 +2,11 @@ from selenium import webdriver
 
 
 class ChromeBrowser(webdriver.Chrome):
-    def __init__(self, options):
-        super().__init__(desired_capabilities=options.to_capabilities())
+    """
+    A custom Chrome browser driver wrapper.
+
+    Args:
+        options (webdriver.ChromeOptions): ChromeOptions instance specifying browser configuration.
+    """
+    def __init__(self, options: webdriver.ChromeOptions):
+        super().__init__(options=options)
