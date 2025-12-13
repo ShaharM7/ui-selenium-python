@@ -98,78 +98,69 @@ Option B — manually install driver
 driver = webdriver.Chrome(executable_path=r"C:\path\to\chromedriver.exe")
 ```
 
-## Running tests with pytest — basic commands
+## Running tests
 
-From project root (venv active):
+Prerequisites
+- Python 3.8+ installed.
+- From project root.
 
-- Run all tests:
+Quick setup (Windows)
+1. Create & activate venv:
+   py -3 -m venv venv
+   venv\Scripts\activate
+2. Install deps:
+   pip install -r requirements.txt
 
-```
-pytest
-```
+Quick setup (macOS / Linux)
+1. Create & activate venv:
+   python3 -m venv venv
+   source venv/bin/activate
+2. Install deps:
+   pip install -r requirements.txt
 
-- Run tests in a specific folder:
+Run all tests
+- From project root:
+  pytest
 
-```
-pytest tests/
-```
-
+Common options
+- Run with more verbose output:
+  pytest -q
 - Run a single test file:
+  pytest tests/test_example.py
+- Run a single test case:
+  pytest tests/test_example.py::test_name
+- Generate an HTML report (requires pytest-html):
+  pytest --html=reports/report.html --self-contained-html
+- Run tests in parallel (requires pytest-xdist):
+  pytest -n auto
 
-```
-pytest tests/test_example.py
-```
+Environment variables (examples)
+- Select browser (default from config if unset):
+  Windows:  set BROWSER=chrome
+  macOS/Linux: export BROWSER=chrome
+- Run in headless mode:
+  Windows:  set HEADLESS=true
+  macOS/Linux: export HEADLESS=true
 
-- Run a single test function:
+Examples
+- Run all tests headless on Chrome (Windows):
+  set BROWSER=chrome
+  set HEADLESS=true
+  pytest
 
-```
-pytest tests/test_example.py::test_function_name
-```
+- Run all tests headless on Chrome (macOS/Linux):
+  export BROWSER=chrome
+  export HEADLESS=true
+  pytest
 
-- Increase verbosity:
+CI tips
+- Use the same pytest commands in your CI pipeline.
+- Store reports in a folder (e.g. `reports/`) and archive them from CI.
+- Use pytest -n auto for faster feedback when parallelism is safe.
 
-```
-pytest -q    # quieter summary
-pytest -vv   # more verbose with detailed output
-```
-
-- Stop after first failure:
-
-```
-pytest -x
-```
-
-- Run tests matching a keyword:
-
-```
-pytest -k "login and not slow"
-```
-
-## Headless mode (CI or no-GUI environments)
-
-If the project supports a HEADLESS environment variable or a fixture flag, set it before running tests.
-
-Command Prompt:
-
-```
-set HEADLESS=1
-pytest
-```
-
-PowerShell:
-
-```
-$env:HEADLESS = "1"
-pytest
-```
-
-If your fixtures don't read HEADLESS, update the driver creation to request headless Chrome:
-
-```
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-driver = webdriver.Chrome(options=options)
-```
+Troubleshooting
+- If a web driver is missing, install the matching driver (or use webdriver-manager if included in requirements).
+- For permission issues on Unix, ensure venv and driver executables are executable.
 
 ## Reports and artifacts
 
