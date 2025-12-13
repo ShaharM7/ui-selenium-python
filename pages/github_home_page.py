@@ -7,7 +7,7 @@ from pages.sign_in_page import SignInPage
 
 
 class GitHubHomePage(AbstractPage):
-    SIGN_IN_BUTTON = (By.CSS_SELECTOR, "a[href='/login']")
+    SIGN_IN_BUTTON = (By.LINK_TEXT, "Sign in")
 
     def __init__(self, browser, awaiter: Awaiter, sign_in_page: SignInPage):
         super().__init__(browser, awaiter)
