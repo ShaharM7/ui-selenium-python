@@ -1,220 +1,194 @@
-# UI Selenium Python — Automation Portfolio
+# UI Selenium Python Test Suite
 
-## Project overview
+This project contains UI automation tests written in Python using Selenium WebDriver.  
+The same test suite can be executed:
 
-This project contains UI automation tests written in Python using Selenium and pytest. Tests exercise the web UI through
-browser automation (Chrome/Firefox). The test suite is organized to keep tests, page objects, fixtures, and helpers
-separated so tests are readable and maintainable.
+- Locally (e.g., using Chrome/Firefox on your machine)
+- On BrowserStack (cloud browsers and devices)
+- Against your own deployed instance of the application
 
-Typical flow:
+> Adjust paths, commands, and environment variables below to match your setup.
 
-- Tests invoke high-level steps.
-- Page objects map pages/components to Selenium actions.
-- Fixtures initialize the WebDriver and provide setup/teardown.
-- Assertions check expected UI outcomes.
+---
 
-## Prerequisites
+## 1. Prerequisites
 
-- Windows 10/11 (commands below assume Windows)
-- Python 3.8+ installed and available on PATH
+- Python 3.10+ installed
+- `pip` available on PATH
+- Google Chrome / Firefox /Edge (for local execution)
+- Browser drivers (e.g., ChromeDriver / GeckoDriver) available on PATH or managed by your framework
 - Git (optional, for cloning)
-- Chrome or Firefox installed (the browser you will run tests with)
-- pip (bundled with Python)
 
-Recommended (optional):
+Install dependencies:
 
-- Install `virtualenv` or use built-in venv module.
-
-## Folder structure (example)
-
-- tests/ — pytest test files
-- pages/ — Page Object classes
-- fixtures/ — pytest fixtures (driver setup, config)
-- resources/ — test data, locators
-- requirements.txt — pinned Python dependencies (if present)
-
-## Setup — create virtual environment and install packages
-
-Open a Windows command prompt (cmd) or PowerShell and run:
-
-1) Clone or open repo and change directory
-
-```
-cd C:\Projects\portfolio\automation-portfolio\ui-selenium-python
-```
-
-2) Create a virtual environment (Windows)
-   Command Prompt:
-
-```
-python -m venv venv
-venv\Scripts\activate
-```
-
-PowerShell:
-
-```
-python -m venv venv
-venv\Scripts\Activate.ps1
-```
-
-3) Upgrade pip (recommended)
-
-```
-python -m pip install --upgrade pip
-```
-
-4) Install packages
-
-- If the repository includes a requirements.txt:
-
-```
+```bash
 pip install -r requirements.txt
 ```
 
-- If there is no requirements.txt, install common packages used here:
+---
 
-```
-pip install selenium pytest webdriver-manager
-```
+## 2. Configuration
 
-(If you prefer Firefox: install `geckodriver` or `webdriver-manager` will handle drivers for you.)
+Use the variables that already ship in `.env`:
 
-## Browser driver options
+| Variable | Purpose |
+| --- | --- |
+| `NAVIGATION_CONFIG_BASEURL` | Base URL of the app under test. |
+| `NAVIGATION_CONFIG_SIGN_IN_ROUTE` | Relative route for sign-in flows. |
+| `AWAITER_CONFIG_*` | Synchronization timeouts (timeout, polling, implicit wait, async JS, page load). |
+| `BROWSER_OPTIONS_CONFIG_ARGUMENTS` | Extra Chromium arguments applied to every session. |
+| `IS_USE_SELENIUM_GRID` | Toggle for your self-hosted Selenium Grid (`true` runs against `SELENIUM_GRID_K8S_CONFIG_URL`). |
+| `IS_USE_BROWSER_STACK` | Toggle for BrowserStack runs (uses `REMOTEBROWSER_CONFIG_*`). |
+| `SELENIUM_GRID_K8S_CONFIG_URL` | URL of your Selenium Grid hub. |
+| `BROWSER_NAME_CONFIG` | Browser name passed to the driver factory (e.g., `chrome`). |
+| `REMOTEBROWSER_CONFIG_SELENIUM_GRID_URL` | Remote WebDriver endpoint (defaults to BrowserStack hub and interpolates `BROWSERSTACK_USERNAME` / `BROWSERSTACK_ACCESS_KEY`). |
+| `REMOTEBROWSER_CONFIG_OS_NAME` / `REMOTEBROWSER_CONFIG_OS_VERSION` / `REMOTEBROWSER_CONFIG_BROWSER_VERSION` | Desired capabilities for BrowserStack sessions. |
 
-Option A — webdriver-manager (recommended for simplicity)
+> Copy `.env` to `.env.local` (or export the same keys) and update the values per environment.
 
-- The `webdriver-manager` package automatically downloads matching browser drivers.
-- Example usage inside fixtures:
-    - from webdriver_manager.chrome import ChromeDriverManager
-    - driver = webdriver.Chrome(ChromeDriverManager().install())
 
-Option B — manually install driver
 
-- Download ChromeDriver matching your Chrome version: https://chromedriver.chromium.org/downloads
-- Put chromedriver.exe in a PATH directory or specify path when creating WebDriver:
+## 3. Run Tests Locally
 
-```
-driver = webdriver.Chrome(executable_path=r"C:\path\to\chromedriver.exe")
-```
+Example overrides:
 
-## Running tests
-
-Prerequisites
-- Python 3.8+ installed.
-- From project root.
-
-Quick setup (Windows)
-1. Create & activate venv:
-   py -3 -m venv venv
-   venv\Scripts\activate
-2. Install deps:
-   pip install -r requirements.txt
-
-Quick setup (macOS / Linux)
-1. Create & activate venv:
-   python3 -m venv venv
-   source venv/bin/activate
-2. Install deps:
-   pip install -r requirements.txt
-
-Run all tests
-- From project root:
-  pytest
-
-Common options
-- Run with more verbose output:
-  pytest -q
-- Run a single test file:
-  pytest tests/test_example.py
-- Run a single test case:
-  pytest tests/test_example.py::test_name
-- Generate an HTML report (requires pytest-html):
-  pytest --html=reports/report.html --self-contained-html
-- Run tests in parallel (requires pytest-xdist):
-  pytest -n auto
-
-Environment variables (examples)
-- Select browser (default from config if unset):
-  Windows:  set BROWSER=chrome
-  macOS/Linux: export BROWSER=chrome
-- Run in headless mode:
-  Windows:  set HEADLESS=true
-  macOS/Linux: export HEADLESS=true
-
-Examples
-- Run all tests headless on Chrome (Windows):
-  set BROWSER=chrome
-  set HEADLESS=true
-  pytest
-
-- Run all tests headless on Chrome (macOS/Linux):
-  export BROWSER=chrome
-  export HEADLESS=true
-  pytest
-
-CI tips
-- Use the same pytest commands in your CI pipeline.
-- Store reports in a folder (e.g. `reports/`) and archive them from CI.
-- Use pytest -n auto for faster feedback when parallelism is safe.
-
-Troubleshooting
-- If a web driver is missing, install the matching driver (or use webdriver-manager if included in requirements).
-- For permission issues on Unix, ensure venv and driver executables are executable.
-
-## Reports and artifacts
-
-- JUnit XML (useful for CI):
-
-```
-pytest --junitxml=results.xml
+```bash
+NAVIGATION_CONFIG_BASEURL=http://localhost:3000 \
+IS_USE_SELENIUM_GRID=false \
+IS_USE_BROWSER_STACK=false \
+BROWSER_NAME_CONFIG=chrome \
+pytest -v
 ```
 
-- HTML report (if pytest-html installed):
+If you prefer your own Selenium Grid (e.g., the K8s hub already in `.env`):
 
-```
-pip install pytest-html
-pytest --html=report.html
-```
-
-## Running a specific browser via environment variable
-
-You can add a simple env var usage in fixtures. Example:
-
-```
-set BROWSER=chrome
-pytest
+```bash
+NAVIGATION_CONFIG_BASEURL=http://localhost:3000 \
+IS_USE_SELENIUM_GRID=true \
+SELENIUM_GRID_K8S_CONFIG_URL=http://<grid-host>:4444 \
+pytest -v
 ```
 
-and read `BROWSER` in your fixture to choose Chrome or Firefox.
+### 3.1. Using Local Browser
 
-## Debugging tips
+1. Ensure your application is running locally (e.g., `http://localhost:3000`).
+2. Set environment variables:
 
-- If a test can't find an element: check locators and increase waits (explicit waits recommended).
-- If driver fails to start: verify chromedriver/geckodriver version matches browser.
-- If tests intermittently fail: add explicit waits, avoid brittle locators.
-
-## Continuous Integration
-
-- Use the same venv + pip install steps in your CI job.
-- Use webdriver-manager or install drivers in CI image.
-- Collect test artifacts with `--junitxml` and optional HTML reports.
-
-## Common commands summary (Windows)
-
-```
-cd C:\Projects\portfolio\automation-portfolio\ui-selenium-python
-python -m venv venv
-venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt   # or pip install selenium pytest webdriver-manager
-set HEADLESS=1
-pytest -q --junitxml=results.xml
+```bash
+export TARGET_ENV=local
+export BASE_URL=http://localhost:3000
+export BROWSER=chrome
+export HEADLESS=false
 ```
 
-## Troubleshooting quick list
+3. Run the tests (adapt to your test runner):
 
-- "ModuleNotFoundError": ensure venv activated and requirements installed.
-- "chromedriver not found": use webdriver-manager or put chromedriver.exe on PATH.
-- Permissions/blocked downloads: run PowerShell/Command Prompt as administrator if needed.
+```bash
+pytest -v
+# or
+python -m pytest -v
+```
 
+### 3.2. Headless Mode
+
+To run in headless mode (useful in CI):
+
+```bash
+export HEADLESS=true
+pytest -v
+```
+
+---
+
+## 4. Run Tests on BrowserStack
+
+1. Export your credentials so the interpolation inside `REMOTEBROWSER_CONFIG_SELENIUM_GRID_URL` works:
+
+```bash
+export BROWSERSTACK_USERNAME=<your-user>
+export BROWSERSTACK_ACCESS_KEY=<your-key>
+```
+
+2. Run the suite with the BrowserStack toggle:
+
+```bash
+NAVIGATION_CONFIG_BASEURL=https://your-public-or-tunneled-url.example \
+IS_USE_BROWSER_STACK=true \
+IS_USE_SELENIUM_GRID=false \
+REMOTEBROWSER_CONFIG_OS_NAME=Windows \
+REMOTEBROWSER_CONFIG_OS_VERSION=11 \
+REMOTEBROWSER_CONFIG_BROWSER_VERSION=latest \
+pytest -v
+```
+
+3. (Optional) Start BrowserStack Local if the target URL is not publicly reachable.
+
+The driver factory should detect `IS_USE_BROWSER_STACK=true` and instantiate `RemoteWebDriver` using `REMOTEBROWSER_CONFIG_SELENIUM_GRID_URL`.
+
+---
+
+## 5. Run Tests Against Your Hosted Instance
+
+The grid runs on the separate **`selenium-grid-doks`** project, deployed to a DigitalOcean Kubernetes cluster.  
+`SELENIUM_GRID_K8S_CONFIG_URL` already contains the public load balancer endpoint of the cluster’s Selenium Grid router (e.g., `http://159.223.250.133:4444`). Use that value whenever you target the hosted instance via Grid.
+
+```bash
+# Run against your staging instance via local browser
+NAVIGATION_CONFIG_BASEURL=https://staging.example.com \
+IS_USE_SELENIUM_GRID=false \
+IS_USE_BROWSER_STACK=false \
+pytest -v
+```
+
+```bash
+# Run against the same instance via your DigitalOcean Selenium Grid
+NAVIGATION_CONFIG_BASEURL=https://staging.example.com \
+IS_USE_SELENIUM_GRID=true \
+SELENIUM_GRID_K8S_CONFIG_URL=${SELENIUM_GRID_K8S_CONFIG_URL:-http://159.223.250.133:4444} \
+pytest -v
+```
+
+```bash
+# Run against the instance via BrowserStack
+NAVIGATION_CONFIG_BASEURL=https://staging.example.com \
+IS_USE_BROWSER_STACK=true \
+IS_USE_SELENIUM_GRID=false \
+pytest -v
+```
+
+Keep credentials, secrets, and any app-specific data outside of the repository; only the documented keys should be overridden per environment.
+
+---
+
+## 6. Typical Folder Structure
+
+```text
+ui-selenium-python/
+  ├─ tests/
+  │   ├─ test_login.py
+  │   ├─ test_checkout.py
+  │   └─ ...
+  ├─ pages/
+  │   ├─ login_page.py
+  │   └─ ...
+  ├─ drivers/ ...
+  ├─ requirements.txt
+  └─ README.md
+```
+
+---
+
+## 7. Extending / Modifying
+
+- Add new tests under `tests/`.
+- Add or update page objects under `pages/`.
+- Update the driver/config logic (e.g., `driver_factory.py`) to support additional:
+  - Browsers
+  - Platforms (more BrowserStack capabilities)
+  - Environments (e.g., `qa`, `staging`, `prod`)
+
+Keep all environment-specific details in configuration, not in individual tests, so the same tests can run:
+
+- Locally
+- On BrowserStack
+- On your own instance of the app - in our case - selenium grid that is deployed by GitHub Actions

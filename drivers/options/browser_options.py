@@ -13,12 +13,13 @@ class BrowserOptions(Options):
         for argument in arguments:
             print(argument)
             self.add_argument(str(argument))
+            self.set_capability("browserName", str(os.environ.get("BROWSER_NAME_CONFIG")))
 
-            use_selenium_grid = str2bool(os.getenv('REMOTEBROWSER_CONFIG_USE_SELENIUM_GRID'))
-            if use_selenium_grid:
+            is_use_selenium_grid = str2bool(os.getenv('IS_USE_SELENIUM_GRID'))
+            is_use_browser_stack = str2bool(os.getenv('IS_USE_BROWSER_STACK'))
+            if is_use_selenium_grid and is_use_browser_stack:
                 self.set_capability('bstack:options', {
                     "os": os.getenv('REMOTEBROWSER_CONFIG_OS_NAME'),
                     "osVersion": os.getenv('REMOTEBROWSER_CONFIG_OS_VERSION'),
-                    "browserName": os.getenv('REMOTEBROWSER_CONFIG_BROWSER_NAME'),
                     "browserVersion": os.getenv('REMOTEBROWSER_CONFIG_BROWSER_VERSION')
                 })
