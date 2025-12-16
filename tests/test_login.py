@@ -20,9 +20,11 @@ def _load_env():
 @pytest.fixture
 def navigator():
     options = BrowserOptions()
-    use_selenium_grid = str2bool(os.environ.get("REMOTEBROWSER_CONFIG_USE_SELENIUM_GRID", "false"))
+    is_use_selenium_grid = str2bool(os.environ.get("IS_USE_SELENIUM_GRID", "false"))
 
-    browser = RemoteBrowser(options=options) if use_selenium_grid else ChromeBrowser(options=options)
+
+
+    browser = RemoteBrowser(options=options) if is_use_selenium_grid else ChromeBrowser(options=options)
     browser.maximize_window()
 
     awaiter = Awaiter(browser)
