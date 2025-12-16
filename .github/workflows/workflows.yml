@@ -1,6 +1,6 @@
 name: Selenium test with Python 3.13 and Chrome
 
-on: [ push ]
+on: [ push, workflow_dispatch ]
 
 jobs:
   selenium_test:
